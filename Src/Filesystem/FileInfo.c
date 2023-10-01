@@ -4,7 +4,8 @@
 #include "Node.c"
 enum FileType{File=0, Directory=1};
 struct FileInfo{
-	char* name;
+	char header[5];//"KOSFI"
+	char name[32];
   bool canRead;
 	bool canWrite;
 	bool canExecute;
