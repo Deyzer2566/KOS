@@ -1,6 +1,10 @@
 #include <stddef.h>
 #include <stdint.h>
-uint8_t CRC7(uint8_t* data, size_t size){ // Size is in bits
+
+/* 
+	size - размер в битах
+*/
+uint8_t CRC7(uint8_t* data, size_t size){ 
 	size_t curBit=7;
 	uint8_t curByte=(data[0]>>1)&0x7f;
 	const uint8_t polynom = 0x89;
