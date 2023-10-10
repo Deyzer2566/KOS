@@ -1,7 +1,12 @@
+#ifndef CRCCALCULATION_H
+#define CRCCALCULATION_H
+
 #include <stddef.h>
 #include <stdint.h>
 
 /* 
+	Вычисляет CRC7 сообщения
+	data - указатель на данные
 	size - размер в битах
 */
 uint8_t CRC7(uint8_t* data, size_t size){ 
@@ -19,3 +24,4 @@ uint8_t CRC7(uint8_t* data, size_t size){
 	}
 	return curByte;
 }
+#endif
