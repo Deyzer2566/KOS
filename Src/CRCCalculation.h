@@ -24,4 +24,20 @@ uint8_t CRC7(uint8_t* data, size_t size){
 	}
 	return curByte;
 }
+
+uint16_t CRC16(uint8_t* data, size_t size){
+	size_t curBit=0;
+	uint32_t curWord=0x0;
+	const uint32_t polynom = 0x11021;
+	const uint8_t zay = 16;
+	while(curBit < size+zay) {
+		curWord <<= 1;
+		if(curBit < size)
+			curWord |= (data[curBit/8]>>(7-(curBit%8)))&1;
+		curBit++;
+		if(curWord&0x10000)
+			curWord ^= polynom;
+	}
+	return (uint16_t)curWord;
+}
 #endif
