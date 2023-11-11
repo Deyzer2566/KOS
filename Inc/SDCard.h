@@ -23,7 +23,7 @@ int initializeSDCard(struct SDCardPort* sdport);
 int SDReadData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t address);
 
 /*
-Записывает один блок в SD карты
+Записывает один блок на SD карту
 Буфер должен иметь размер 512 байт
 Возвращает 0 при успехе, -1 при неудаче
 */

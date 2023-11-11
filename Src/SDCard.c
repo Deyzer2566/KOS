@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "stm32f1xx.h"
-#include "../CRCCalculation.h"
+#include "CRCCalculation.h"
 struct SDCommand{
 	uint8_t commandIndex;
 	uint32_t args;
