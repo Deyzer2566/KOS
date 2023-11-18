@@ -318,11 +318,20 @@ int SDWriteData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addre
 		return -1;
 	}
 	uint8_t x = 0xFE;
+	uint16_t crc = CRC16(buffer, 8*512);
 	sendBlock(sdport, &x, 1);
 	sendBlock(sdport, buffer, 512);
-	uint8_t responseToken = 0;
-	readBlock(sdport, (uint8_t*)&responseToken, 1);
-	if(responseToken != 0x5){
+	x = (crc>>8)&0xff;
+	sendBlock(sdport, &x, 1);
+	x = crc&0xff;
+	sendBlock(sdport, &x, 1);
+	uint8_t responseToken = 0xff;
+	int i = 0;
+	for(;i<5&&responseToken&0x10;i++)
+		readBlock(sdport, (uint8_t*)&responseToken, 1);
+	if(i == 5)
+		return -1;
+	if((responseToken&0xf) != 0x5){
 		deselect(sdport);
 		return -1;
 	}
