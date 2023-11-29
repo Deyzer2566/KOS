@@ -1,6 +1,6 @@
 #include "process_loader.h"
 #include "elf.h"
-#include "fatfs.h"
+#include <ff.h>
 
 enum LoadResult loadHeader(FIL* file, struct elf_header* header){
 	UINT read;
@@ -78,7 +78,7 @@ enum LoadResult loadProcessFromElfFile(char* filename, struct Process* proc){
 				proc->data[i+prog_head.p_vaddr] = 0;
 		}
 	}
-	proc->pc = (void*)header.e_entry;
+	proc->context.pc = header.e_entry;
 	f_close(&file);
 	return LOAD_OK;
 }

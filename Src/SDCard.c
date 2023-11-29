@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "stm32f1xx.h"
 #include "CRCCalculation.h"
+#define MAX_DELAY (0x1000)
 struct SDCommand{
 	uint8_t commandIndex;
 	uint32_t args;
@@ -41,7 +42,7 @@ struct SDResponse7{
 };
 void flush(const struct SDCardPort* port);
 void sendBlock(const struct SDCardPort* port, uint8_t* block, size_t size){
-	HAL_SPI_Transmit(port->hspi, block, size, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(port->hspi, block, size, MAX_DELAY);
 }
 void sendCommand(const struct SDCardPort* port, struct SDCommand command){
 	uint8_t x = 0xff;
@@ -68,7 +69,7 @@ void readBlock(const struct SDCardPort* port, uint8_t* buffer, size_t buffSize){
 	uint8_t x = 0xff;
 	while(buffSize > 0) {
 			HAL_StatusTypeDef res = HAL_SPI_TransmitReceive(port->hspi, &x, buffer, 1,
-															HAL_MAX_DELAY);
+															MAX_DELAY);
 			if(res != HAL_OK)
 				return;
 			buffer++;
