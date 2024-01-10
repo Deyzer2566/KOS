@@ -62,7 +62,7 @@ DRESULT disk_read (
 {
 	UINT x = count+1;
 	for(UINT i = 0;i<count;i++)
-		if(SDReadData(&sdport0, (uint8_t*)buff+i*512, sector*512) != 0)
+		if(SDReadData(&sdport0, (uint8_t*)buff+i*sdport0.blockSize, (sector+i)*sdport0.blockSize) != 0)
 			return RES_ERROR;
 	return RES_OK;
 }
@@ -84,7 +84,7 @@ DRESULT disk_write (
 {
 	UINT x = count+1;
 	for(UINT i = 0;i<count;i++)
-		if(SDWriteData(&sdport0, (uint8_t*)buff+i*sdport0.blockSize, sector*sdport0.blockSize) != 0)
+		if(SDWriteData(&sdport0, (uint8_t*)buff+i*sdport0.blockSize, (sector+i)*sdport0.blockSize) != 0)
 			return RES_ERROR;
 	return RES_OK;
 }

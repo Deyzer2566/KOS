@@ -1,0 +1,28 @@
+#ifndef PROCESS_SAVER_LOADER_H
+#define PROCESS_SAVER_LOADER_H
+#include "Object.h"
+enum Storage{
+	FATFS_storage
+};
+enum SaveObjectResult{
+	SAVE_OBJECT_OK,
+	SAVE_OBJECT_INVALID_STORAGE,
+	SAVE_OBJECT_CANT_OPEN_FILE,
+	SAVE_OBJECT_CANT_WRITE_OBJECT_INFO,
+	SAVE_OBJECT_CANT_WRITE_OBJECT_DATA,
+	SAVE_OBJECT_CANT_WRITE_OBJECT_HANDLER_DATA_SIZE,
+	SAVE_OBJECT_CANT_WRITE_OBJECT_HANDLER_DATA
+};
+enum LoadObjectResult{
+	LOAD_OBJECT_OK,
+	LOAD_OBJECT_INVALID_STORAGE,
+	LOAD_OBJECT_CANT_OPEN_FILE,
+	LOAD_OBJECT_CANT_READ_OBJECT_INFO,
+	LOAD_OBJECT_CANT_READ_OBJECT_DATA,
+	LOAD_OBJECT_CANT_READ_OBJECT_HANDLER_DATA_SIZE,
+	LOAD_OBJECT_CANT_READ_OBJECT_HANDLER_DATA
+};
+enum SaveObjectResult saveObject(struct Object* object, enum Storage to);
+enum LoadObjectResult loadObject(struct Object* object, enum Storage from);
+enum LoadObjectResult loadObjectInfo(struct Object* obj, enum Storage from);
+#endif

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "stm32f1xx.h"
 #include "CRCCalculation.h"
-#define MAX_DELAY (0x1000)
+#define MAX_DELAY (0x100)
 struct SDCommand{
 	uint8_t commandIndex;
 	uint32_t args;
@@ -264,8 +264,7 @@ int initializeSDCard(struct SDCardPort* sdport){
 int SDReadData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t address) {
 	if(sdport->state != INITIALIZED)
 		return -1;
-	if(sdport->type == SDHC)
-		address /= 512;
+	address /= sdport->blockSize;
 	select(sdport);
 	flush(sdport);
 	sendCommand(sdport,(struct SDCommand){.args=address, .commandIndex = 17});//Отправляем 17 команду для чтения 1 блока
@@ -273,15 +272,15 @@ int SDReadData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addres
 	if(resp.addressError || resp.comCRCError || resp.eraseReset || resp.eraseSequenceError || resp.illegalCommand ||
 	resp.inIdleState || resp.parameterError){
 		deselect(sdport);
-		return -1;
+		return -2;
 	}
 	uint8_t x = 0;
 	int i = 0;
-	for(;i<100 && x != 0xFE; i++)
+	for(;i<1000 && x != 0xFE; i++)
 		readBlock(sdport,&x,1);
-	if(i == 100 && x != 0xFE){
+	if(i == 1000 && x != 0xFE){
 		deselect(sdport);
-		return -1;
+		return -3;
 	}
 	readBlock(sdport, buffer, 512);
 	uint16_t crc = 0;
@@ -296,7 +295,7 @@ int SDReadData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addres
 	if(crcCorrect == crc)
 		return 0;
 	else
-		return -1;
+		return -4;
 }
 
 /*
@@ -307,8 +306,7 @@ int SDReadData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addres
 int SDWriteData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t address) {
 	if(sdport->state != INITIALIZED)
 		return -1;
-	if(sdport->type == SDHC)
-		address /= 512;
+	address /= sdport->blockSize;
 	select(sdport);
 	flush(sdport);
 	sendCommand(sdport,(struct SDCommand){.args=address, .commandIndex = 24});//Отправляем 24 команду для записи 1 блока
@@ -316,7 +314,7 @@ int SDWriteData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addre
 	if(resp.addressError || resp.comCRCError || resp.eraseReset || resp.eraseSequenceError || resp.illegalCommand ||
 	resp.inIdleState || resp.parameterError){
 		deselect(sdport);
-		return -1;
+		return -2;
 	}
 	uint8_t x = 0xFE;
 	uint16_t crc = CRC16(buffer, 8*512);
@@ -331,10 +329,10 @@ int SDWriteData(const struct SDCardPort* sdport, uint8_t* buffer, uint32_t addre
 	for(;i<5&&responseToken&0x10;i++)
 		readBlock(sdport, (uint8_t*)&responseToken, 1);
 	if(i == 5)
-		return -1;
+		return -3;
 	if((responseToken&0xf) != 0x5){
 		deselect(sdport);
-		return -1;
+		return -4;
 	}
 	while(x != 0xFF)
 		readBlock(sdport, &x, 1); // busy

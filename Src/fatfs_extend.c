@@ -20,7 +20,5 @@ FRESULT f_recursiveRemoveDir(const TCHAR* path){
 		}
 	}
 	res = f_closedir(&dir);
-	if(res == FR_OK)
-		res = f_unlink(path);
 	return res;
 }
